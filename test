@@ -1,0 +1,883 @@
+#include <iostream>
+#include <string>
+#include <map>
+#include <vector>
+#include <fstream>
+
+using namespace std;
+
+// Klasa User bazowa, dla wszystkich uzytkowników
+class User {
+protected:
+	string name;
+	string last_name;
+	string user_id;
+	string username;
+	string password;
+
+public:
+
+	User() {}
+
+	User (string name_, string last_name_, string user_id_, string username_, string password_) {
+		name = name_;
+		last_name = last_name_;
+		user_id = user_id_;
+		username = username_;
+		password = password_;
+	}
+
+	string getName() {
+		return name;
+	}
+
+	string getLastName() {
+		return last_name;
+	}
+
+	string getUserId() {
+		return user_id;
+	}
+
+	string getUsername() {
+		return username;
+	}
+
+	string getPassword() {
+		return password;
+	}
+};
+
+// Klasa Pharmacist dziedziczaca po klasie User
+class Pharmacist : public User {
+protected:
+	string experience;
+
+public:
+
+	Pharmacist(string name_, string last_name_, string user_id_, string username_, string password_, string experience_)
+		: User(name_, last_name_, user_id_, username_, password_) {
+		experience = experience_;
+	}
+
+	string getExperience() {
+		return experience;
+	}
+};
+
+// Klasa Administrator dziedziczaca po klasie User
+class Administrator : public User {
+protected:
+	string access_level;
+
+public:
+
+	Administrator(string name_, string last_name_, string user_id_, string username_, string password_, string access_level_)
+		: User(name_, last_name_, user_id_, username_, password_) {
+		access_level = access_level_;
+	}
+
+	string getAccessLevel() {
+		return access_level;
+	}
+};
+
+// Klasa Client dziedziczaca po klasie User
+class Client : public User {
+protected:
+	string address;
+
+public:
+
+	Client(string name_, string last_name_, string user_id_, string username_, string password_, string address_)
+		: User(name_, last_name_, user_id_, username_, password_) {
+		address = address_;
+	}
+
+	string getAddress() {
+		return address;
+	}
+};
+
+// Klasa Stockman dziedziczaca po klasie User
+class Stockman : public User {
+protected:
+	string warehouse_location;
+
+public:
+
+	Stockman(string name_, string last_name_, string user_id_, string username_, string password_, string warehouse_location_)
+		: User(name_, last_name_, user_id_, username_, password_) {
+		warehouse_location = warehouse_location_;
+	}
+
+	string getWarehouseLocation() {
+		return warehouse_location;
+	}
+};
+
+// Klasa Supplier dziedziczaca po klasie User
+class Supplier : public User {
+protected:
+	string company_name;
+
+public:
+
+	Supplier(string name_, string last_name_, string user_id_, string username_, string password_, string company_name_)
+		: User(name_, last_name_, user_id_, username_, password_) {
+		company_name = company_name_;
+	}
+
+	string getCompanyName() {
+		return company_name;
+	}
+};
+
+// Klasa bazowa Item dla wszystkich produktów
+class Item {
+protected:
+	string name;
+	string description;
+	int price;
+	int quantity;
+
+public:
+
+	Item() {}
+
+	Item(string name_, string description_, int price_, int quantity_) {
+		name = name_;
+		description = description_;
+		price = price_;
+		quantity = quantity_;
+	}
+
+	string getName() {
+		return name;
+	}
+
+	string getDescription() {
+		return description;
+	}
+
+	int getPrice() {
+		return price;
+	}
+
+	int getQuantity() {
+		return quantity;
+	}
+};
+
+// Klasa Medicine dziedziczaca po klasie Item
+class Medicine : public Item {
+protected:
+	bool isPrescription;
+	int expiry;
+
+public:
+
+	Medicine(string name_, string description_, int price_, int quantity_, bool isPrescription_, int expiry_)
+		: Item(name_, description_, price_, quantity_) {
+		isPrescription = isPrescription_;
+		expiry = expiry_;
+	}
+
+	bool getIsPrescription() {
+		return isPrescription;
+	}
+
+	int getExpiry() {
+		return expiry;
+	}
+};
+
+// Klasa Drug dziedziczaca po klasie Medicine
+class Drug : public Medicine {
+protected:
+	float concentration;
+
+public:
+
+	Drug(string name_, string description_, int price_, int quantity_, bool isPrescription_, int expiry_, float concentration_)
+		: Medicine(name_, description_, price_, quantity_, isPrescription_, expiry_) {
+		concentration = concentration_;
+	}
+
+	float getConcentration() {
+		return concentration;
+	}
+};
+
+// Klasa Transaction do obsługi transakcji
+class Transaction {
+protected:
+	string user_id;
+	string transaction_id;
+	int quantity;
+	string item_name;
+	int price;
+	string payment_method;
+
+public:
+
+	Transaction() {}
+
+	Transaction(string user_id_, string transaction_id_, int quantity_, string item_name_, int price_, string payment_method_) {
+		user_id = user_id_;
+		transaction_id = transaction_id_;
+		quantity = quantity_;
+		item_name = item_name_;
+		price = price_;
+		payment_method = payment_method_;
+	}
+
+	string getUserId() {
+		return user_id;
+	}
+
+	string getTransactionId() {
+		return transaction_id;
+	}
+
+	int getQuantity() {
+		return quantity;
+	}
+
+	string getItemName() {
+		return item_name;
+	}
+
+	int getPrice() {
+		return price;
+	}
+
+	string getPaymentMethod() {
+		return payment_method;
+	}
+
+	void displayTransaction() {
+		cout << "ID transakcji: " << transaction_id << endl;
+		cout << "Produkt: " << item_name << endl;
+		cout << "Ilosc: " << quantity << endl;
+		cout << "Cena: " << price << endl;
+		cout << "Sposob zaplaty: " << payment_method << endl;
+		cout << endl;
+	}
+};
+
+// Klasa Prescription do obsługi recept
+class Prescription {
+protected:
+	string user_id;
+	string prescription_id;
+	string medicine_name;
+	int quantity;
+	int expiry;
+	string doctor_name;
+	string doctor_id;
+
+public:
+	Prescription() {}
+
+	Prescription(string user_id_, string prescription_id_, string medicine_name_, int quantity_, int expiry_, string doctor_name_, string doctor_id_) {
+		user_id = user_id_;
+		prescription_id = prescription_id_;
+		medicine_name = medicine_name_;
+		quantity = quantity_;
+		expiry = expiry_;
+		doctor_name = doctor_name_;
+		doctor_id = doctor_id_;
+	}
+
+	string getUserId() {
+		return user_id;
+	}
+
+	string getPrescriptionId() {
+		return prescription_id;
+	}
+
+	string getMedicineName() {
+		return medicine_name;
+	}
+
+	int getQuantity() {
+		return quantity;
+	}
+
+	int getExpiry() {
+		return expiry;
+	}
+
+	string getDoctorName() {
+		return doctor_name;
+	}
+
+	string getDoctorId() {
+		return doctor_id;
+	}
+
+	void displayPrescription() {
+		cout << "ID recepty: " << prescription_id << endl;
+		cout << "Lek: " << medicine_name << endl;
+		cout << "Ilosc: " << quantity << endl;
+		cout << "Ważność recepty: " << expiry << endl;
+		cout << "Lekarz: " << doctor_name << endl;
+		cout << "ID lekarza: " << doctor_id << endl;
+		cout << endl;
+	}
+};
+
+// Klasa Pharmacy zawierajaca wszystkie informacje dotyczace apteki
+class Pharmacy {
+protected:
+	string name;
+	string address;
+	string phone_number;
+	string email;
+	// Mapa towarow
+	map<string, Item*> inventory;
+	// Wektor uzytkownikow
+	vector<User*> users;
+	// Mapa transakcji
+	map<string, Transaction*> transactions;
+	// Mapa recept
+	map<string, Prescription*> prescriptions;
+
+public:
+	Pharmacy() {}
+
+	Pharmacy(string name_, string address_, string phone_number_, string email_) {
+		name = name_;
+		address = address_;
+		phone_number = phone_number_;
+		email = email_;
+	}
+
+	string getName() {
+		return name;
+	}
+
+	string getAddress() {
+		return address;
+	}
+
+	string getPhoneNumber() {
+		return phone_number;
+	}
+
+	string getEmail() {
+		return email;
+	}
+
+	// Funkcja dodawania towaru do apteki
+	void addItem(string name, Item* item) {
+		inventory[name] = item;
+	}
+
+	// Funkcja dodawania użytkownika do apteki
+	void addUser(User* user) {
+		users.push_back(user);
+	}
+
+	// Funkcja dodawania transakcji do apteki
+	void addTransaction(string id, Transaction* transaction) {
+		transactions[id] = transaction;
+	}
+
+	// Funkcja dodawania recept do apteki
+	void addPrescription(string id, Prescription* prescription) {
+		prescriptions[id] = prescription;
+	}
+
+	// Funkcja do sprawdzenia dostepnosci towaru
+	bool checkAvailability(string name) {
+		if (inventory.find(name) != inventory.end()) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	// Funkcja do realizacji transakcji
+	void processTransaction(string user_id, string item_name, int quantity, string payment_method) {
+		if (checkAvailability(item_name)) {
+			if (inventory[item_name]->getQuantity() >= quantity) {
+				// Generowanie ID transakcji
+				int x = rand() % 1000 + 1;
+				string transaction_id = "T" + to_string(x);
+				// Tworzenie transakcji
+				Transaction* transaction = new Transaction(user_id, transaction_id, quantity, item_name, inventory[item_name]->getPrice(), payment_method);
+				// Dodanie transakcji do apteki
+				addTransaction(transaction_id, transaction);
+				// Uaktualnienie stanu magazynowego
+				inventory[item_name]->quantity -= quantity;
+				// Potwierdzenie transakcji
+				cout << "Transakcja zostala zrealizowana!" << endl;
+				transaction->displayTransaction();
+			}
+			else {
+				cout << "Brak wystarczajacej ilosci towaru!" << endl;
+			}
+		}
+		else {
+			cout << "Towar niedostepny!" << endl;
+		}
+	}
+
+	// Funkcja do realizacji transakcji za pomoca recepty
+	void processPrescription(string user_id, string medicine_name, string prescription_id, string doctor_name, string doctor_id, int quantity) {
+		if (checkAvailability(medicine_name)) {
+			if (inventory[medicine_name]->getQuantity() >= quantity) {
+				// Generowanie ID transakcji
+				int x = rand() % 1000 + 1;
+				string transaction_id = "T" + to_string(x);
+				// Tworzenie recepty
+				Prescription* prescription = new Prescription(user_id, prescription_id, medicine_name, quantity, inventory[medicine_name]->getExpiry(), doctor_name, doctor_id);
+				// Dodanie recepty do apteki
+				addPrescription(prescription_id, prescription);
+				// Tworzenie transakcji
+				Transaction* transaction = new Transaction(user_id, transaction_id, quantity, medicine_name, inventory[medicine_name]->getPrice(), "Recepta");
+				// Dodanie transakcji do apteki
+				addTransaction(transaction_id, transaction);
+				// Uaktualnienie stanu magazynowego
+				inventory[medicine_name]->quantity -= quantity;
+				// Potwierdzenie transakcji
+				cout << "Transakcja zostala zrealizowana!" << endl;
+				transaction->displayTransaction();
+				prescription->displayPrescription();
+			}
+			else {
+				cout << "Brak wystarczajacej ilosci towaru!" << endl;
+			}
+		}
+		else {
+			cout << "Towar niedostepny!" << endl;
+		}
+	}
+
+	// Funkcja do wyświetlania informacji o produkcie
+	void displayItemInformation(string name) {
+		if (checkAvailability(name)) {
+			cout << "Nazwa produktu: " << inventory[name]->getName() << endl;
+			cout << "Opis produktu: " << inventory[name]->getDescription() << endl;
+			cout << "Cena produktu: " << inventory[name]->getPrice() << endl;
+			cout << "Ilosc produktu: " << inventory[name]->getQuantity() << endl;
+			if (dynamic_cast<Drug*>(inventory[name])) {
+				cout << "Stężenie leku: " << dynamic_cast<Drug*>(inventory[name])->getConcentration() << endl;
+			}
+			cout << endl;
+		}
+		else {
+			
+			cout << "Towar niedostepny!" << endl;
+		}
+	}
+
+	// Funkcja do wyświetlania informacji o transakcji
+	void displayTransactionInformation(string id) {
+		if (transactions.find(id) != transactions.end()) {
+			transactions[id]->displayTransaction();
+		}
+		else {
+			cout << "Brak takiej transakcji!" << endl;
+		}
+	}
+
+	// Funkcja do wyświetlania wszystkich transakcji dla danego użytkownika
+	void displayTransactionsForUser(string id) {
+		if (transactions.size() > 0) {
+			bool check = false;
+			for (map<string, Transaction*>::iterator it = transactions.begin(); it != transactions.end(); it++) {
+				if (it->second->getUserId() == id) {
+					it->second->displayTransaction();
+					check = true;
+				}
+			}
+			if (!check) {
+				cout << "Brak transakcji dla tego uzytkownika!" << endl;
+			}
+		}
+		else {
+			cout << "Brak transakcji!" << endl;
+		}
+	}
+
+	// Funkcja do wyświetlania informacji o receptach dla danego użytkownika
+	void displayPrescriptionsForUser(string id) {
+		if (prescriptions.size() > 0) {
+			bool check = false;
+			for (map<string, Prescription*>::iterator it = prescriptions.begin(); it != prescriptions.end(); it++) {
+				if (it->second->getUserId() == id) {
+					it->second->displayPrescription();
+					check = true;
+				}
+			}
+			if (!check) {
+				cout << "Brak recept dla tego uzytkownika!" << endl;
+			}
+		}
+		else {
+			cout << "Brak recept!" << endl;
+		}
+	}
+
+	// Funkcja do wyświetlania informacji o receptach dla danego leku
+	void displayPrescriptionsForMedicine(string medicine_name) {
+		if (prescriptions.size() > 0) {
+			bool check = false;
+			for (map<string, Prescription*>::iterator it = prescriptions.begin(); it != prescriptions.end(); it++) {
+				if (it->second->getMedicineName() == medicine_name) {
+					it->second->displayPrescription();
+					check = true;
+				}
+			}
+			if (!check) {
+				cout << "Brak recept dla tego leku!" << endl;
+			}
+		}
+		else {
+			cout << "Brak recept!" << endl;
+		}
+	}
+
+	// Funkcja do wyświetlania stanu magazynowego
+	void displayWarehouseStatus() {
+		for (map<string, Item*>::iterator it = inventory.begin(); it != inventory.end(); it++) {
+			cout << "Nazwa produktu: " << it->second->getName() << endl;
+			cout << "Ilosc produktu: " << it->second->getQuantity() << endl;
+			cout << endl;
+		}
+	}
+
+	// Funkcja do wyświetlania informacji o użytkowniku
+	void displayUserInformation(string id) {
+		for (vector<User*>::iterator it = users.begin(); it != users.end(); it++) {
+			if ((*it)->getUserId() == id) {
+				// Sprawdzenie czy użytkownik jest farmaceutą
+				if (dynamic_cast<Pharmacist*>(*it)) {
+					cout << "ID: " << (*it)->getUserId() << endl;
+					cout << "Imie: " << (*it)->getName() << endl;
+					cout << "Nazwisko: " << (*it)->getLastName() << endl;
+					cout << "Login: " << (*it)->getUsername() << endl;
+					cout << "Haslo: " << (*it)->getPassword() << endl;
+					cout << "Staz: " << dynamic_cast<Pharmacist*>(*it)->getExperience() << endl;
+					cout << endl;
+					break;
+				}
+				// Sprawdzenie czy użytkownik jest administratorem
+				else if (dynamic_cast<Administrator*>(*it)) {
+					cout << "ID: " << (*it)->getUserId() << endl;
+					cout << "Imie: " << (*it)->getName() << endl;
+					cout << "Nazwisko: " << (*it)->getLastName() << endl;
+					cout << "Login: " << (*it)->getUsername() << endl;
+					cout << "Haslo: " << (*it)->getPassword() << endl;
+					cout << "Poziom dostepu: " << dynamic_cast<Administrator*>(*it)->getAccessLevel() << endl;
+					cout << endl;
+					break;
+				}
+				// Sprawdzenie czy użytkownik jest klientem
+				else if (dynamic_cast<Client*>(*it)) {
+					cout << "ID: " << (*it)->getUserId() << endl;
+					cout << "Imie: " << (*it)->getName() << endl;
+					cout << "Nazwisko: " << (*it)->getLastName() << endl;
+					cout << "Login: " << (*it)->getUsername() << endl;
+					cout << "Haslo: " << (*it)->getPassword() << endl;
+					cout << "Adres: " << dynamic_cast<Client*>(*it)->getAddress() << endl;
+					cout << endl;
+					break;
+				}
+				// Sprawdzenie czy użytkownik jest magazynierem
+				else if (dynamic_cast<Stockman*>(*it)) {
+					cout << "ID: " << (*it)->getUserId() << endl;
+					cout << "Imie: " << (*it)->getName() << endl;
+					cout << "Nazwisko: " << (*it)->getLastName() << endl;
+					cout << "Login: " << (*it)->getUsername() << endl;
+					cout << "Haslo: " << (*it)->getPassword() << endl;
+					cout << "Lokalizacja magazynu: " << dynamic_cast<Stockman*>(
+
+					(*it)->getWarehouseLocation() << endl;
+					cout << endl;
+					break;
+				}
+				// Sprawdzenie czy użytkownik jest dostawcą
+				else if (dynamic_cast<Supplier*>(*it)) {
+					cout << "ID: " << (*it)->getUserId() << endl;
+					cout << "Imie: " << (*it)->getName() << endl;
+					cout << "Nazwisko: " << (*it)->getLastName() << endl;
+					cout << "Login: " << (*it)->getUsername() << endl;
+					cout << "Haslo: " << (*it)->getPassword() << endl;
+					cout << "Nazwa firmy: " << dynamic_cast<Supplier*>(*it)->getCompanyName() << endl;
+					cout << endl;
+					break;
+				}
+			}
+		}
+	}
+
+	// Funkcja do wyświetlania stanu magazynowego dla dostawcy
+	void displayWarehouseStatusForSupplier(string supplier_id) {
+		for (vector<User*>::iterator it = users.begin(); it != users.end(); it++) {
+			if (dynamic_cast<Supplier*>(*it)) {
+				if ((*it)->getUserId() == supplier_id) {
+					for (map<string, Item*>::iterator iterator = inventory.begin(); iterator != inventory.end(); iterator++) {
+						cout << "Nazwa produktu: " << iterator->second->getName() << endl;
+						cout << "Ilosc produktu: " << iterator->second->getQuantity() << endl;
+						cout << endl;
+					}
+					break;
+				}
+			}
+		}
+	}
+
+	// Funkcja do wyświetlania transakcji dla dostawcy
+	void displayTransactionForSupplier(string supplier_id) {
+		for (vector<User*>::iterator it = users.begin(); it != users.end(); it++) {
+			if (dynamic_cast<Supplier*>(*it)) {
+				if ((*it)->getUserId() == supplier_id) {
+					for (map<string, Transaction*>::iterator iterator = transactions.begin(); iterator != transactions.end(); iterator++) {
+						iterator->second->displayTransaction();
+					}
+					break;
+				}
+			}
+		}
+	}
+};
+
+// Funkcja do zapisu danych do pliku
+void saveData(Pharmacy* pharmacy) {
+	ofstream file;
+
+	// Zapis danych o aptece
+	file.open("Pharmacy.txt");
+	file << pharmacy->getName() << " ";
+	file << pharmacy->getAddress() << " ";
+	file << pharmacy->getPhoneNumber() << " ";
+	file << pharmacy->getEmail();
+	file.close();
+
+	// Zapis danych o użytkownikach
+	file.open("Users.txt");
+	for (vector<User*>::iterator it = pharmacy->users.begin(); it != pharmacy->users.end(); it++) {
+		file << (*it)->getName() << " " << (*it)->getLastName() << " " << (*it)->getUserId() << " " << (*it)->getUsername() << " " << (*it)->getPassword() << " ";
+		if (dynamic_cast<Pharmacist*>(*it)) {
+			file << "P " << dynamic_cast<Pharmacist*>(*it)->getExperience() << endl;
+		}
+		else if (dynamic_cast<Administrator*>(*it)) {
+			file << "A " << dynamic_cast<Administrator*>(*it)->getAccessLevel() << endl;
+		}
+		else if (dynamic_cast<Client*>(*it)) {
+			file << "C " << dynamic_cast<Client*>(*it)->getAddress() << endl;
+		}
+		else if (dynamic_cast<Stockman*>(*it)) {
+			file << "S " << dynamic_cast<Stockman*>(*it)->getWarehouseLocation() << endl;
+		}
+		else if (dynamic_cast<Supplier*>(*it)) {
+			file << "Su " << dynamic_cast<Supplier*>(*it)->getCompanyName() << endl;
+		}
+	}
+	file.close();
+
+	// Zapis danych o produktach
+	file.open("Products.txt");
+	for (map<string, Item*>::iterator it = pharmacy->inventory.begin(); it != pharmacy->inventory.end(); it++) {
+		file << it->second->getName() << " " << it->second->getDescription() << " " << it->second->getPrice() << " " << it->second->getQuantity() << " ";
+		if (dynamic_cast<Medicine*>(it->second)) {
+			file << dynamic_cast<Medicine*>(it->second)->getIsPrescription() << " " << dynamic_cast<Medicine*>(it->second)->getExpiry() << " ";
+		}
+		if (dynamic_cast<Drug*>(it->second)) {
+			file << dynamic_cast<Drug*>(it->second)->getConcentration();
+		}
+		file << endl;
+	}
+	file.close();
+
+	// Zapis danych o transakcjach
+	file.open("Transactions.txt");
+	for (map<string, Transaction*>::iterator it = pharmacy->transactions.begin(); it != pharmacy->transactions.end(); it++) {
+		file << it->second->getTransactionId() << " " << it->second->getUserId() << " " << it->second->getItemName() << " " << it->second->getQuantity() << " " << it->second->getPrice() << " " << it->second->getPaymentMethod() << endl;
+	}
+	file.close();
+
+	// Zapis danych o receptach
+	file.open("Prescriptions.txt");
+	for (map<string, Prescription*>::iterator it = pharmacy->prescriptions.begin(); it != pharmacy->prescriptions.end(); it++) {
+		file << it->second->getPrescriptionId() << " " << it->second->getUserId() << " " << it->second->getMedicineName() << " " << it->second->getQuantity() << " " << it->second->getExpiry() << " " << it->second->getDoctorName() << " " << it->second->getDoctorId() << endl;
+	}
+	file.close();
+}
+
+// Funkcja do wczytywania danych z pliku
+void loadData(Pharmacy* pharmacy) {
+	ifstream file;
+	// Wczytywanie danych o aptece
+	file.open("Pharmacy.txt");
+	string line;
+	getline(file, line);
+	stringstream ss(line);
+	string word;
+	string pharmacy_data[4];
+	int i = 0;
+	while (getline(ss, word, ' ')) {
+		pharmacy_data[i] = word;
+		i++;
+	}
+	pharmacy->name = pharmacy_data[0];
+	pharmacy->address = pharmacy_data[1];
+	pharmacy->phone_number = pharmacy_data[2];
+	pharmacy->email = pharmacy_data[3];
+	file.close();
+	// Zapis danych o produktach
+	file.open("Products.txt");
+	for (map<string, Item*>::iterator it = pharmacy->inventory.begin(); it != pharmacy->inventory.end(); it++) {
+		file << it->second->getName() << " " << it->second->getDescription() << " " << it->second->getPrice() << " " << it->second->getQuantity() << " ";
+		if (dynamic_cast<Medicine*>(it->second)) {
+			file << dynamic_cast<Medicine*>(it->second)->getIsPrescription() << " " << dynamic_cast<Medicine*>(it->second)->getExpiry() << " ";
+		}
+		if (dynamic_cast<Drug*>(it->second)) {
+			file << dynamic_cast<Drug*>(it->second)->getConcentration();
+		}
+		file << endl;
+	}
+	file.close();
+
+	// Zapis danych o transakcjach
+	file.open("Transactions.txt");
+	for (map<string, Transaction*>::iterator it = pharmacy->transactions.begin(); it != pharmacy->transactions.end(); it++) {
+		file << it->second->getTransactionId() << " " << it->second->getUserId() << " " << it->second->getItemName() << " " << it->second->getQuantity() << " " << it->second->getPrice() << " " << it->second->getPaymentMethod() << endl;
+	}
+	file.close();
+
+	// Zapis danych o receptach
+	file.open("Prescriptions.txt");
+	for (map<string, Prescription*>::iterator it = pharmacy->prescriptions.begin(); it != pharmacy->prescriptions.end(); it++) {
+		file << it->second->getPrescriptionId() << " " << it->second->getUserId() << " " << it->second->getMedicineName() << " " << it->second->getQuantity() << " " << it->second->getExpiry() << " " << it->second->getDoctorName() << " " << it->second->getDoctorId() << endl;
+	}
+	file.close();
+}
+
+// Funkcja do wczytywania danych z pliku
+void loadData(Pharmacy* pharmacy) {
+	ifstream file;
+	// Wczytywanie danych o aptece
+	file.open("Pharmacy.txt");
+	string line;
+	getline(file, line);
+	stringstream ss(line);
+	string word;
+	string pharmacy_data[4];
+	int i = 0;
+	while (getline(ss, word, ' ')) {
+		pharmacy_data[i] = word;
+		i++;
+	}
+	pharmacy->name = pharmacy_data[0];
+	pharmacy->address = pharmacy_data[1];
+	pharmacy->phone_number = pharmacy_data[2];
+	pharmacy->email = pharmacy_data[3];
+	file.close();
+	// Wczytywanie danych o użytkownikach
+	file.open("Users.txt");
+	while (getline(file, line)) {
+		stringstream ss(line);
+		string word;
+		string user_data[7];
+		i = 0;
+		while (getline(ss, word, ' ')) {
+			user_data[i] = word;
+			i++;
+		}
+		if (user_data[5] == "P") {
+			Pharmacist *new_pharmacist = new Pharmacist(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4], stoi(user_data[6]));
+			pharmacy->users.push_back(new_pharmacist);
+		}
+		else if (user_data[5] == "A") {
+			Administrator *new_administrator = new Administrator(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4], stoi(user_data[6]));
+			pharmacy->users.push_back(new_administrator);
+		}
+		else if (user_data[5] == "C") {
+			Client *new_client = new Client(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4], user_data[6]);
+			pharmacy->users.push_back(new_client);
+		}
+		else if (user_data[5] == "S") {
+			Stockman *new_stockman = new Stockman(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4], user_data[6]);
+			pharmacy->users.push_back(new_stockman);
+		}
+		else if (user_data[5] == "Su") {
+			Supplier *new_supplier = new Supplier(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4], user_data[6]);
+			pharmacy->users.push_back(new_supplier);
+		}
+	}
+	file.close();
+
+	// Wczytywanie danych o produktach
+	file.open("Products.txt");
+	while (getline(file, line)) {
+		stringstream ss(line);
+		string word;
+		string item_data[7];
+		i = 0;
+		while (getline(ss, word, ' ')) {
+			item_data[i] = word;
+			i++;
+		}
+		if (item_data[5] == "1") {
+			Medicine *new_medicine = new Medicine(item_data[0], item_data[1], stod(item_data[2]), stoi(item_data[3]), item_data[4] == "1", stoi(item_data[6]));
+			pharmacy->inventory.insert(pair<string, Item*>(item_data[0], new_medicine));
+		}
+		else if (item_data[5] == "0") {
+			Drug *new_drug = new Drug(item_data[0], item_data[1], stod(item_data[2]), stoi(item_data[3]), item_data[4], stod(item_data[6]));
+			pharmacy->inventory.insert(pair<string, Item*>(item_data[0], new_drug));
+		}
+	}
+	file.close();
+
+	// Wczytywanie danych o transakcjach
+	file.open("Transactions.txt");
+	while (getline(file, line)) {
+		stringstream ss(line);
+		string word;
+		string transaction_data[6];
+		i = 0;
+		while (getline(ss, word, ' ')) {
+			transaction_data[i] = word;
+			i++;
+		}
+		Transaction *new_transaction = new Transaction(transaction_data[0], transaction_data[1], transaction_data[2], stoi(transaction_data[3]), stod(transaction_data[4]), transaction_data[5]);
+		pharmacy->transactions.insert(pair<string, Transaction*>(transaction_data[0], new_transaction));
+	}
+	file.close();
+
+	// Wczytywanie danych o receptach
+	file.open("Prescriptions.txt");
+	while (getline(file, line)) {
+		stringstream ss(line);
+		string word;
+		string prescription_data[7];
+		i = 0;
+		while (getline(ss, word, ' ')) {
+			prescription_data[i] = word;
+			i++;
+		}
+		Prescription *new_prescription = new Prescription(prescription_data[0], prescription_data[1], prescription_data[2], stoi(prescription_data[3]), stoi(prescription_data[4]), prescription_data[5], prescription_data[6]);
+		pharmacy->prescriptions.insert(pair<string, Prescription*>(prescription_data[0], new_prescription));
+	}
+	file.close();
+}
+
+int main() {
+	Pharmacy *pharmacy = new Pharmacy("Apteka 4", "ul. Glowna 4", "123456789", "apteka4@gmail.com");
+	loadData(pharmacy);
+	pharmacy->displayUsers();
+	pharmacy->displayItems();
+	pharmacy->displayTransactions();
+	pharmacy->displayPrescriptions();
+	pharmacy->displayWarehouseStatusForStockman("Stockman1");
+	pharmacy->displayTransactionForSupplier("Supplier1");
+	saveData(pharmacy);
+	return 0;
+}
